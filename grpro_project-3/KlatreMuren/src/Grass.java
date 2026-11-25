@@ -6,9 +6,13 @@ public class Grass implements Actor, NonBlocking {
     private double spreadRate = 0.5; 
     private World world;
 
-    Grass(World world){ 
-        // Græs skal kunne plantes med en position i verden
+    Grass(World world, Location location, Boolean isRandom){ 
         this.world = world;
+        if (isRandom) {
+            randomPlace(world);
+        } else {
+            place(world, location);
+        }
     }
 
     public void act(World world){

@@ -1,21 +1,27 @@
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class FileReader {
     int display_size = 800;
     int delay = 1000;
 
-    Scanner scanner = new Scanner(System.in);
+    public void readFile(String filePath) throws FileNotFoundException {
+        File file = new File(filePath);
+        Scanner scanner = new Scanner(file);
 
-    public void readFile(String filePath) {
-        while(scanner.hasNext()) {
-            int size = scanner.nextInt();
-            String animal = scanner.nextLine();
-            int position = scanner.nextInt();
-        }
+        int size = scanner.nextInt();
+
         Program p = new Program(size, display_size, delay);
         World world = p.getWorld();
+        
+        while(scanner.hasNext()) {
+            String actor = scanner.next();
+            int amount = scanner.nextInt();
+        }
+        scanner.close();
     }
 
 }
 
-
+    

@@ -15,10 +15,24 @@ public class FileReader {
         Program p = new Program(size, display_size, delay);
         World world = p.getWorld();
         
-        while(scanner.hasNext()) {
+        while(scanner.hasNext()) { //tager ikke højde for 20-30 eks.
             String actor = scanner.next();
             int amount = scanner.nextInt();
+
+            for(int i = 0; i < amount; i++) {
+                if (actor.equals("rabbit")) {
+                    Rabbit rabbit = new Rabbit(world, location, true);
+                }
+                if (actor.equals("grass")) {
+                    Grass grass = new Grass(world, location, true);
+                }
+            }
         }
+
+        //Overvej brugen af maps
+        //Map<String, Integer> actorCounts = new HashMap<>();
+        world.add(Object); //skal virke på vilkårlig actor
+
         scanner.close();
     }
 

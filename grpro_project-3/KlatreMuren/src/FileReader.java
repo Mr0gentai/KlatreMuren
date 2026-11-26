@@ -1,8 +1,13 @@
+import itumulator.executable.Program;
+import itumulator.world.World;
+
+import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class FileReader {
+
+public class FileReader { 
     int display_size = 800;
     int delay = 1000;
 
@@ -12,30 +17,32 @@ public class FileReader {
 
         int size = scanner.nextInt();
 
-        Program p = new Program(size, display_size, delay);
+        Program p = new Program(size, display_size, delay); 
         World world = p.getWorld();
-        
-        while(scanner.hasNext()) { //tager ikke højde for 20-30 eks.
+
+        while(scanner.hasNext()) {
             String actor = scanner.next();
             int amount = scanner.nextInt();
 
             for(int i = 0; i < amount; i++) {
-                if (actor.equals("rabbit")) {
-                    Rabbit rabbit = new Rabbit(world, location, true);
-                }
-                if (actor.equals("grass")) {
-                    Grass grass = new Grass(world, location, true);
+                if(actor.equals("rabbit")) {
+                    world.add(new Rabbit()); //Mangler et rabbit objekt
+
+                } else if(actor.equals("rabbit_hole")) {
+
+                    Random random = new Random();
+
+                    int x = random.nextInt(size);
+                    int y = random.nextInt(size);
+
+                    Rabbithole hole = new Rabbithole();
+
+                    Location location = new Location(x, y);
                 }
             }
         }
-
-        //Overvej brugen af maps
-        //Map<String, Integer> actorCounts = new HashMap<>();
-        world.add(Object); //skal virke på vilkårlig actor
-
         scanner.close();
+        p.show();
     }
+}   
 
-}
-
-    

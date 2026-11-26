@@ -52,10 +52,10 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     public void act(World world) {
         hungerGrows();
         
-        
+
         // Kills rabbit if too hungry or old
     if (age > 10 || hunger > 12) {
-        rabbitDie();
+        rabbitDie(world);
         }
     
     if (world.isDay() == true) {
@@ -66,7 +66,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
         }
         else {
             // move randomly during daytime if not hungry
-            world.getSurroundingTiles().random();
+            world.getSurroundingTiles();
         }
     }
     
@@ -100,7 +100,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     }
 
     //rabbit die funktion
-    void rabbitDie() {
+    void rabbitDie(World world) {
         System.out.println("pow! i am dead!");
         world.delete(this);
     }

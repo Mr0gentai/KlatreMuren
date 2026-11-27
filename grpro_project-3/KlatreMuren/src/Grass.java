@@ -6,28 +6,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Random;
 
-public class Grass implements Actor, NonBlocking {
+public class Grass extends ObjectActor implements Actor, NonBlocking {
     private double spreadRate = 0.5; 
     private World world;
 
     Grass(World world, Location location, Boolean isRandom){ 
-        this.world = world;
-        if (isRandom) {
-            randomPlace(world);
-        } else if (location != null) {
-            place(world, location, this);
-        }
+        super(world, location, isRandom);
     }
 
     public void act(World world){
         if (new Random().nextDouble() < spreadRate) {
             spread(world);
         }
-    }
-
-    public void place(World world, Location location, Object object){
-        //Græs placeres i verden
-        world.setTile(location, object);
     }
 
     public void randomPlace(World world){
@@ -70,9 +60,4 @@ public class Grass implements Actor, NonBlocking {
             }
         }
     }   
-
-    //local motods
-    private void deleteGrass(World world){
-        world.delete(this);
-    }
 }

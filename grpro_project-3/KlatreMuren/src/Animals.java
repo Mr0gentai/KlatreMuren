@@ -1,4 +1,4 @@
-public class Animals {
+public abstract class Animals {
     //superklasse for alle dyr, som deler fælles egenskaber.
 
     /*

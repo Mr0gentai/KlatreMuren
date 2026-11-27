@@ -7,7 +7,7 @@ import itumulator.world.World;
 import itumulator.world.Location;
 
 
-public class Rabbit implements Actor, DynamicDisplayInformationProvider {
+public class Rabbit extends ObjectActor implements Actor, DynamicDisplayInformationProvider {
     int age;
     int hunger;
     int energy;
@@ -15,7 +15,8 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     Random rn = new Random();
     RabbitHole home;
     
-    public Rabbit(int age, int hunger) {
+    public Rabbit(World world, Location location, boolean isRandom, int age, int hunger) {
+        super(world, location, isRandom);
         this.age = age;
         this.hunger = hunger;
         if (age < 1 || age > 8) {

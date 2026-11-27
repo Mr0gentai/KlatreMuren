@@ -29,13 +29,19 @@ public class Rabbit extends ObjectActor implements Actor, DynamicDisplayInformat
     @Override
     public DisplayInformation getInformation() {
         if (age > 1) {
-            return sleeping
-                ? new DisplayInformation(Color.gray, "rabbit-sleeping.png")
-                : new DisplayInformation(Color.gray, "rabbit-large.png");
+        if (sleeping == false) {
+            return new DisplayInformation(Color.gray, "rabbit-large.png"); }
+            else {
+                return new DisplayInformation(Color.gray, "rabbit-sleeping.png");
+            }
+    }
+        else {
+            if (sleeping == false)
+            return new DisplayInformation(Color.gray, "rabbit-small.png");
+            else {
+                return new DisplayInformation(Color.gray, "rabbit-small-sleeping.png");
+            }
         }
-        return sleeping
-            ? new DisplayInformation(Color.gray, "rabbit-small-sleeping.png")
-            : new DisplayInformation(Color.gray, "rabbit-small.png");
     }
 
     /* alt der sker i tic i verden skal skrives 

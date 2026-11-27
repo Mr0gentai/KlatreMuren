@@ -1,18 +1,25 @@
 import itumulator.simulator.Actor;
-import itumulator.world.*;
-import java.util.*;
+import itumulator.world.Location;
+import itumulator.world.NonBlocking;
+import itumulator.world.World;
+import itumulator.executable.DisplayInformation;
+import itumulator.executable.DynamicDisplayInformationProvider;
+import java.awt.Color;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Random;
 
-public class Grass implements Actor, NonBlocking {
+public class Grass extends ObjectActor implements Actor, NonBlocking, DynamicDisplayInformationProvider {
     private double spreadRate = 0.5; 
     private World world;
 
     Grass(World world, Location location, Boolean isRandom){ 
-        this.world = world;
-        if (isRandom) {
-            randomPlace(world);
-        } else {
-            place(world, location);
-        }
+        super(world, location, isRandom);
+    }
+
+    @Override
+    public DisplayInformation getInformation() {
+        return new DisplayInformation(Color.green, "grass.png");
     }
 
     public void act(World world){
@@ -21,10 +28,6 @@ public class Grass implements Actor, NonBlocking {
         }
     }
 
-    public void place(World world, Location location){
-        //Græs placeres i verden
-        world.setTile(location, this);
-    }
     public void randomPlace(World world){
         //Græs placeres tilfældigt i verden
         Set<Location> occupiedLocations = new HashSet<>();
@@ -37,7 +40,7 @@ public class Grass implements Actor, NonBlocking {
                 if (world.containsNonBlocking(l)) {
                     occupiedLocations.add(l);
                 } else {
-                    place(world, l);
+                    place(world, l, this);
                     break;
                 }
             }
@@ -46,14 +49,23 @@ public class Grass implements Actor, NonBlocking {
 
     public void spread(World world){
         //Græs spreder sig til nærliggende felter
-        //Mangler at tage højde for andet græs
-        Set<Location> emptyTiles = world.getEmptySurroundingTiles();
+        Set<Location> emptyTiles = world.getSurroundingTiles();
         Location[] emptyTileArray = emptyTiles.toArray(new Location[0]);
-        place(world, emptyTileArray[new Random().nextInt(emptyTiles.size())]);; // Random int mellem 0 og set size
-    }   
+        Set<Location> occupiedLocations = new HashSet<>();
 
-    //local motods
-    private void deleteGrass(World world){
-        world.delete(this);
-    }
+        for(int i = emptyTileArray.length - 1; i >=0; i--){
+            Location l = emptyTileArray[new Random().nextInt(emptyTiles.size())];
+            if (!occupiedLocations.contains(l) && !world.containsNonBlocking(l)) {
+                place(world, l, new Grass(world, null,false));
+                break;
+            } else if (emptyTiles.size() == occupiedLocations.size()) {
+                break;
+                //Hvis alle nærliggende felter er optaget, så stopper spredningen
+                //Kan overvejes at lave en boolean der hedder "isSpreadable" som tjekker om der er plads til at sprede sig, og hvis ikke, så stopper spredningen
+            } else {
+                occupiedLocations.add(l);
+                i++;
+            }
+        }
+    }   
 }

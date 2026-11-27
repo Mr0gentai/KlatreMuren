@@ -6,27 +6,22 @@ import itumulator.world.World;
 import itumulator.world.Location;
 
 
-public class Rabbit implements Actor, DynamicDisplayInformationProvider {
-    int age;
-    int hunger;
-    int energy;
-    boolean sleeping;
-    Random rn = new Random();
-    int viewDistance;
-
+public class Rabbit extends ObjectActor implements Actor, DynamicDisplayInformationProvider {
+    private int age;
+    private int hunger;
+    private int energy;
+    private boolean sleeping;
+    private Random rn = new Random();
+    private int viewDistance;
+    private RabbitHole home;
     
-    Rabbit(int age, int hunger) {
+    public Rabbit(World world, Location location, boolean isRandom, int age, int hunger) {
+        super(world, location, isRandom);
         this.age = age;
         this.hunger = hunger;
-        if (age < 1 || age > 8) {
-        this.energy = 1;
-        }
-        else {
-        this.energy = 2;
-        }   
-        sleeping = false;
+        this.energy = (age < 1 || age > 8) ? 1 : 2;
+        this.sleeping = false;
         this.viewDistance = 2;
-    
     }
         /* hvis kanin er ældre end 1 år sætte
         den til stor kanin samt checker om den sover
@@ -34,22 +29,15 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     @Override
     public DisplayInformation getInformation() {
         if (age > 1) {
-        if (sleeping == false) {
-            return new DisplayInformation(Color.gray, "rabbit-large.png"); }
-            else {
-                return new DisplayInformation(Color.gray, "rabbit-sleeping.png");
-            }
-    }
-        else {
-            if (sleeping == false)
-            return new DisplayInformation(Color.gray, "rabbit-small.png");
-            else {
-                return new DisplayInformation(Color.gray, "rabbit-small-sleeping.png");
-            }
+            return sleeping
+                ? new DisplayInformation(Color.gray, "rabbit-sleeping.png")
+                : new DisplayInformation(Color.gray, "rabbit-large.png");
         }
+        return sleeping
+            ? new DisplayInformation(Color.gray, "rabbit-small-sleeping.png")
+            : new DisplayInformation(Color.gray, "rabbit-small.png");
     }
 
-     
     /* alt der sker i tic i verden skal skrives 
     her i void act*/
     @Override
@@ -59,37 +47,31 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
         if (world.getCurrentTime() == 0) {
             aging();
         }
-        
-
-        // Rabbit dies if too hungry or old
-    if (age > 10) {
-        rabbitDie(world);
-        System.out.println("A rabbit has died from old age");
+        if (age > 10) {
+            rabbitDie(world);
+            return;
         }
 
-    if (hunger > 12) {
-        rabbitDie(world);
-        System.out.println("A rabbit has died from hunger");
-    }
+        if (hunger > 12) {
+            rabbitDie(world);
+            return;
+        }
     
-    if (world.isDay() == true) {
-        if (hunger > 5) {
+        if (world.isDay()) {
+            awake();
+            if (hunger > 5) {
             if (standingOnGrass(world) == true) {
                 eatGrass(world);
+            } else {
+                moveTowardsGrass(world);
             }
-            else {
-            moveTowardsGrass(world);
-            
+            } else {
+                moveRandomly(world);
             }
         }
         else {
-            // moves randomly during daytime if not hungry
-            moveRandomly(world);
-    }
-
-    }
-    
-
+            sleep();
+        }
     }
 
     private boolean standingOnGrass(World world) {
@@ -102,7 +84,6 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
         if (world.containsNonBlocking(current) && world.getNonBlocking(current) instanceof Grass) {
             return;
         }
-
         Location target = null;
         int nearestDistance = Integer.MAX_VALUE;
         for (Location tile : world.getSurroundingTiles(current, viewDistance)) {
@@ -126,7 +107,12 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
                 steps.add(tile);
             }
         }
-       
+
+        if (!steps.isEmpty()) {
+            world.move(this, steps.get(rn.nextInt(steps.size())));
+        } else {
+            moveRandomly(world);
+        }
     }
 
     private void moveRandomly(World world) {
@@ -144,14 +130,16 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
                 Math.abs(first.getY() - second.getY()));
     }
 
-    // private void moveTowardsHole(World world) 
-        // This method is currently not implemented. It can be used to move the rabbit towards a hole in the future.
-        
-    
+    public void digsHole(World world) {
+        if (home == null) {
+            Location location = world.getLocation(this);
+            home = new RabbitHole(world, location, false);
+        }
+    }
 
     private void aging() {
-          age++;
-        }
+        age++;
+    }
     
     
     public int getAge() {
@@ -167,11 +155,12 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     }
 
     void eatGrass(World world) {
-        System.out.println("yum yum");
         hunger = hunger - 8;
         Location current = world.getLocation(this);
-        world.delete(world.getNonBlocking(current) instanceof Grass);
-
+        Object grass = world.getNonBlocking(current);
+        if (grass instanceof Grass) {
+            world.delete(grass);
+        }
     }
 
     //rabbit die funktion

@@ -74,7 +74,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     
     if (world.isDay() == true) {
         if (hunger > 5) {
-            if (standingOnGrass(world)) {
+            if (standingOnGrass(world) == true) {
                 eatGrass(world);
             }
             else {

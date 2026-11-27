@@ -5,4 +5,4 @@ public class Animals {
     lav en metode der tillader dyr at stå på kaninhuller uden at der sker noget.
     overvej at lav metoden i rabbitholes, efter hvad der ender med at give bedst mening
     */
-}
+}   // Brug nonblocking interface så er alt good(David)

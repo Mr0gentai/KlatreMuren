@@ -1,9 +1,9 @@
 import java.awt.Color;
-import java.util.Random;
-
+import java.util.*;
 import itumulator.executable.*;
 import itumulator.simulator.Actor;
 import itumulator.world.World;
+import itumulator.world.Location;
 
 
 public class Rabbit implements Actor, DynamicDisplayInformationProvider {
@@ -12,6 +12,8 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     int energy;
     boolean sleeping;
     Random rn = new Random();
+    int viewDistance;
+
     
     Rabbit(int age, int hunger) {
         this.age = age;
@@ -23,6 +25,8 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
         this.energy = 2;
         }   
         sleeping = false;
+        this.viewDistance = 2;
+    
     }
         /* hvis kanin er ældre end 1 år sætte
         den til stor kanin samt checker om den sover
@@ -45,63 +49,133 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
         }
     }
 
-    } 
+     
     /* alt der sker i tic i verden skal skrives 
     her i void act*/
     @Override
     public void act(World world) {
         hungerGrows();
+
+        if (world.getCurrentTime() == 0) {
+            aging();
+        }
         
 
-        // Kills rabbit if too hungry or old
-    if (age > 10 || hunger > 12) {
+        // Rabbit dies if too hungry or old
+    if (age > 10) {
         rabbitDie(world);
+        System.out.println("A rabbit has died from old age");
         }
+
+    if (hunger > 12) {
+        rabbitDie(world);
+        System.out.println("A rabbit has died from hunger");
+    }
     
     if (world.isDay() == true) {
         if (hunger > 5) {
-            // move towards grass during daytime if hungry
-            world.getSurroundingTiles().
-            world.move(world.getTile(null), null);
+            if (standingOnGrass(world)) {
+                eatGrass(world);
+            }
+            else {
+            moveTowardsGrass(world);
+            
+            }
         }
         else {
-            // move randomly during daytime if not hungry
-            world.getSurroundingTiles();
+            // moves randomly during daytime if not hungry
+            moveRandomly(world);
+    }
+
+    }
+    
+
+    }
+
+    private boolean standingOnGrass(World world) {
+        Location current = world.getLocation(this);
+        return world.containsNonBlocking(current) && world.getNonBlocking(current) instanceof Grass;
+    }
+
+    private void moveTowardsGrass(World world) {
+        Location current = world.getLocation(this);
+        if (world.containsNonBlocking(current) && world.getNonBlocking(current) instanceof Grass) {
+            return;
         }
-    }
-    
-    if (world.isNight() == true) {
-        // move towards at hole at night
+
+        Location target = null;
+        int nearestDistance = Integer.MAX_VALUE;
+        for (Location tile : world.getSurroundingTiles(current, viewDistance)) {
+            if (world.containsNonBlocking(tile) && world.getNonBlocking(tile) instanceof Grass) {
+                int distance = distance(tile, current);
+                if (distance < nearestDistance || (distance == nearestDistance && rn.nextBoolean())) {
+                    target = tile;
+                    nearestDistance = distance;
+                }
+            }
+        }
+
+        if (target == null) {
+            moveRandomly(world);
+            return;
+        }
+
+        List<Location> steps = new ArrayList<>();
+        for (Location tile : world.getEmptySurroundingTiles(current)) {
+            if (distance(tile, target) < distance(current, target)) {
+                steps.add(tile);
+            }
+        }
+       
     }
 
+    private void moveRandomly(World world) {
+        Location current = world.getLocation(this);
+        List<Location> available = new ArrayList<>(world.getEmptySurroundingTiles(current));
+        available.add(current);
+
+            world.move(this, available.get(this.rn.nextInt(available.size())));
+        }
+    
+
+    private int distance(Location first, Location second) {
+        return Math.max(
+                Math.abs(first.getX() - second.getX()),
+                Math.abs(first.getY() - second.getY()));
     }
 
-    // aging funktion
-    void aging() {
-            age++;
+    private void moveTowardsHole(World world) {
+        // This method is currently not implemented. It can be used to move the rabbit towards a hole in the future.
+        
     }
+
+    private void aging() {
+          age++;
+        }
     
-    int getAge() {
+    
+    public int getAge() {
         return age;
     }
-    
-    // increases hunger funktion
-    void hungerGrows() {
+
+    private void hungerGrows() {
         hunger++;
     }
 
-    int getHunger() {
+    public int getHunger() {
         return hunger;
     }
 
-    void eatGrass() {
+    void eatGrass(World world) {
         System.out.println("yum yum");
         hunger = hunger - 8;
+        Location current = world.getLocation(this);
+        world.delete(world.getNonBlocking(current) instanceof Grass);
+
     }
 
     //rabbit die funktion
     void rabbitDie(World world) {
-        System.out.println("pow! i am dead!");
         world.delete(this);
     }
 

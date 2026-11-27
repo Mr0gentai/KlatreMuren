@@ -147,7 +147,6 @@ public class World {
         return current;
     }
 
-
     /**
      * Retrieves the current location of a specified object within the world. If the object is in the world but
      * not currently on the map (i.e., its location is null), this method throws an

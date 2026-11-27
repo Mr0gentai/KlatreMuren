@@ -26,7 +26,7 @@ public class FileReader {
 
             for(int i = 0; i < amount; i++) {
                 if(actor.equals("rabbit")) {
-                    world.add(new Rabbit()); //Mangler et rabbit objekt
+                    world.add(new Rabbit(new Random().nextInt(10), new Random().nextInt(10))); //Mangler et rabbit objekt
 
                 } else if(actor.equals("rabbit_hole")) {
 

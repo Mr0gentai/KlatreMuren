@@ -13,7 +13,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     boolean sleeping;
     Random rn = new Random();
     
-    Rabbit(int age, int hunger) {
+    public Rabbit(int age, int hunger) {
         this.age = age;
         this.hunger = hunger;
         if (age < 1 || age > 8) {
@@ -44,15 +44,13 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
             }
         }
     }
-
-    } 
+    
     /* alt der sker i tic i verden skal skrives 
     her i void act*/
     @Override
     public void act(World world) {
         hungerGrows();
         
-
         // Kills rabbit if too hungry or old
     if (age > 10 || hunger > 12) {
         rabbitDie(world);
@@ -61,7 +59,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     if (world.isDay() == true) {
         if (hunger > 5) {
             // move towards grass during daytime if hungry
-            world.getSurroundingTiles().
+            world.getSurroundingTiles();
             world.move(world.getTile(null), null);
         }
         else {
@@ -69,13 +67,19 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
             world.getSurroundingTiles();
         }
     }
-    
+
     if (world.isNight() == true) {
         // move towards at hole at night
     }
 
     }
 
+    public void digsHole(World world) { //Kaninen skal kunne grave et hul under specifikke betingelser.
+        if (age > 2 && hunger < 5) {
+            RabbitHole hole = new RabbitHole();
+            world.add(hole);
+        }
+    }
     // aging funktion
     void aging() {
             age++;

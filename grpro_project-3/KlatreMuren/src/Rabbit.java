@@ -4,6 +4,7 @@ import java.util.Random;
 import itumulator.executable.*;
 import itumulator.simulator.Actor;
 import itumulator.world.World;
+import itumulator.world.Location;
 
 
 public class Rabbit implements Actor, DynamicDisplayInformationProvider {
@@ -12,6 +13,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     int energy;
     boolean sleeping;
     Random rn = new Random();
+    RabbitHole home;
     
     public Rabbit(int age, int hunger) {
         this.age = age;
@@ -44,7 +46,7 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
             }
         }
     }
-    
+
     /* alt der sker i tic i verden skal skrives 
     her i void act*/
     @Override
@@ -75,9 +77,11 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
     }
 
     public void digsHole(World world) { //Kaninen skal kunne grave et hul under specifikke betingelser.
-        if (age > 2 && hunger < 5) {
-            RabbitHole hole = new RabbitHole();
-            world.add(hole);
+        if (home == null) {
+                Location location = world.getLocation(this);
+                home = new RabbitHole();
+                world.setTile(location, home);
+            
         }
     }
     // aging funktion

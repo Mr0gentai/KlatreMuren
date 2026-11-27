@@ -144,10 +144,10 @@ public class Rabbit implements Actor, DynamicDisplayInformationProvider {
                 Math.abs(first.getY() - second.getY()));
     }
 
-    private void moveTowardsHole(World world) {
+    // private void moveTowardsHole(World world) 
         // This method is currently not implemented. It can be used to move the rabbit towards a hole in the future.
         
-    }
+    
 
     private void aging() {
           age++;
